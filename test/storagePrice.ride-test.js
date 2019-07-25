@@ -7,13 +7,19 @@ describe('wallet test suite', async function () {
     this.timeout(300000);
     let tokenTx;
     let assetTx;
+    let assetId;
+    const countTokens = 100;
     before(async function () {
         await setupAccounts(
             {
                 caller1: 10.05 * wvs,
                 caller2: 200.05 * wvs,
+                account1: 10 * wvs,
+                account25: 5 * wvs,
+                account17_4: 5 * wvs,
+                account17_5: 5 * wvs,
+                account17_6: 5 * wvs,
                 wallet: 10.05 * wvs
-
             }
         );
         const walletAddress = address(accounts.wallet)
@@ -103,7 +109,67 @@ describe('wallet test suite', async function () {
         await broadcast(tokenTx);
         await waitForTx(tokenTx.id)
     })
-    it('can success sell expensive then bought', async function () {
+
+    it('can success issue tokens', async function () {
+        const walletAddress = address(accounts.wallet)
+        /* const scriptToken = file('smartToken.ride')
+            .replace(`base58'3MvHSFKcaY71wp62waNAqj2NPikV8fK5nh1'`, `base58'${walletAddress}'`)
+            let data = scriptToken;
+            let buff = new Buffer(data);
+            let base64data = buff.toString('base64');
+            console.log('base64data :',base64data); */
+            const issueParam = {
+            name: Math.random().toString(36).substring(2, 8),
+            description: Math.random().toString(36).substring(2, 15),
+            quantity: countTokens,
+            decimals: 2,
+            reissuable: true,
+            // script: base64data
+        }
+        const txIssue = issue(issueParam);
+        await broadcast(txIssue);
+        assetId = txIssue.id; 
+        await waitForTx(txIssue.id);        
+    })
+
+    it('truly balance of the tokens', async function () {
+        await assetBalance(assetId)
+        .then((assetBal) => {
+            expect(assetBal).to.equal(countTokens);
+        });
+    });
+
+    it(' success transfer tokens to all accounts', async function () {
+      /*   const recipients = [
+            {recipient: address(accounts.account1),amount: 1},
+            {recipient: address(accounts.account25),amount: 25},
+            {recipient: address(accounts.account17_4),amount: 17},
+            {recipient: address(accounts.account17_5),amount: 17},
+            {recipient: address(accounts.account17_6),amount: 17}
+        ]
+        await massTransfer(recipients)
+        .then((tx) => {
+            //expect(assetBal).to.equal(countTokens);
+            console.log('tx :', tx);
+        }); */
+    });
+
+    it('sucsess send 1% tokens', async () => {
+        const sendTokens = 1;
+        const tx = await transfer({
+            recipient: address(accounts.account1),
+            amount: sendTokens,
+            assetId: assetId
+        }, accounts.caller2);
+        console.log('tx :', tx);
+        await broadcast(tx);
+        await waitForTx(tx.id)
+        await assetBalance(assetId, address(accounts.account1))
+        .then((assetBal) => {
+            expect(assetBal).to.equal(sendTokens);
+        });
+    })
+    /* it('can success sell expensive then bought', async function () {
         const sellOrder = {
             orderType: 'sell',
             assetPair: {
@@ -140,5 +206,5 @@ describe('wallet test suite', async function () {
             sellMatcherFee: 0.003
         }
 
-    })
+    }) */
 })      

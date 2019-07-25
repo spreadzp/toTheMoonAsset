@@ -1,0 +1,13 @@
+{-# STDLIB_VERSION 2 #-}
+{-# CONTENT_TYPE EXPRESSION #-}
+{-# SCRIPT_TYPE ACCOUNT #-}
+ 
+
+match (tx) {
+    case e: ExchangeTransaction =>
+         e.sellOrder.expiration - e.sellOrder.timestamp <= 86400000 &&
+         e.sellOrder.price / 100000000 > height
+    case t: TransferTransaction => false
+    case _ =>
+        true
+}
