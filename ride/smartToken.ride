@@ -1,0 +1,16 @@
+{-# STDLIB_VERSION 2 #-}
+{-# CONTENT_TYPE EXPRESSION #-}
+{-# SCRIPT_TYPE ASSET #-}
+
+let emitentDapp = Address(base58'3MvHSFKcaY71wp62waNAqj2NPikV8fK5nh1')
+# let assetId = base58'8UECFkBVURp3rYkUP2tMzhjW3NqnQ2zWEQcn2VMfZuZM'
+# let priceId = base58'WAVES'
+
+match tx {
+    case exTx: ExchangeTransaction =>
+        # let pair = AssetPair(assetId, priceId)
+        let keyPriceSeller = toBase58String(exTx.sellOrder.sender.bytes)
+        let priceBought = extract(getInteger(emitentDapp, keyPriceSeller)) 
+        exTx.sellOrder.price > priceBought # && exTx.buyOrder.assetPair == pair 
+    case _ => true
+}

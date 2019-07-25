@@ -1,0 +1,26 @@
+{
+  "name": "smartasset",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "surfboard test storagePrice.ride-test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spreadzp/toTheMoonAsset.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/spreadzp/toTheMoonAsset/issues"
+  },
+  "homepage": "https://github.com/spreadzp/toTheMoonAsset#readme",
+  "dependencies": {
+    "@waves/surfboard": "^1.6.0",
+    "@waves/waves-crypto": "^3.0.17"
+  }
+}
